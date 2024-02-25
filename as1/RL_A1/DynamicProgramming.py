@@ -59,7 +59,7 @@ def Q_value_iteration(env, gamma=1, threshold=0.001):
                 # Track the maximum absolute error in this sweep
                 max_error = max(max_error, error)
 
-        # Uncomment the following lines if you want to visualize the Q-value estimates at each iteration
+        # visualize the Q-value estimates at each iteration
         env.render(Q_sa=QIagent.Q_sa, plot_optimal_policy=True, step_pause=0.2)
         print("Q-value iteration, iteration {}, max error {}".format(iteration, max_error))
         
