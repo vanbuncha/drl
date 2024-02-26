@@ -30,13 +30,28 @@ class QValueIterationAgent:
     
 
         
-   
-    def update(self, s, a, p_sas, r_sas):
-        ''' Function updates Q(s,a) using p_sas and r_sas '''
-        q_value = np.sum(p_sas * (r_sas + self.gamma * np.max(self.Q_sa, axis=1)))
+    # Update function using in place update instead of using a copy of the Q-table
+    # is faster but not so consistent - and is biased as first calc pairs might have bigger importnace
+
+    # def update(self, s, a, p_sas, r_sas):
+    #     ''' Function updates Q(s,a) using p_sas and r_sas '''
+    #     q_value = np.sum(p_sas * (r_sas + self.gamma * np.max(self.Q_sa, axis=1))) # Bellman equation
+    #     error = np.abs(self.Q_sa[s, a] - q_value)
+    #     self.Q_sa[s, a] = q_value
+    #     return error  
+    
+
+    # Update using a copy to ensure consistency
+    def update(self, s, a, p_sas, r_sas, Q_sa_copy):
+        ''' Function updates Q(s,a) using p_sas and r_sas and a copy of the current Q-table '''
+        # Use Q_sa_copy for the Bellman update to ensure consistency
+        q_value = np.sum(p_sas * (r_sas + self.gamma * np.max(Q_sa_copy, axis=1)))
         error = np.abs(self.Q_sa[s, a] - q_value)
+        
+        # Update the Q-value in the original Q-table after computing the new value
         self.Q_sa[s, a] = q_value
         return error  
+
 
     
 def Q_value_iteration(env, gamma=1, threshold=0.001):
@@ -46,6 +61,7 @@ def Q_value_iteration(env, gamma=1, threshold=0.001):
     iteration = 0  # Initialize iteration counter
     while True:
         max_error = 0  # Reset the max error for this sweep
+        Q_sa_copy = np.copy(QIagent.Q_sa)  # Make a copy of the current Q-table
         
         # Sweep through the state space
         for s in range(env.n_states):
@@ -53,14 +69,14 @@ def Q_value_iteration(env, gamma=1, threshold=0.001):
                 # Obtain model outputs: transition probabilities and rewards
                 p_sas, r_sas = env.model(s, a)
                 
-                # Update the agent based on the model's outputs
-                error = QIagent.update(s, a, p_sas, r_sas)
+                # Update the agent based on the model's outputs using the copy of the Q-table
+                error = QIagent.update(s, a, p_sas, r_sas, Q_sa_copy)
                 
                 # Track the maximum absolute error in this sweep
                 max_error = max(max_error, error)
 
         # visualize the Q-value estimates at each iteration
-        env.render(Q_sa=QIagent.Q_sa, plot_optimal_policy=True, step_pause=0.2)
+        env.render(Q_sa=QIagent.Q_sa, plot_optimal_policy=True, step_pause=0.3)
         print("Q-value iteration, iteration {}, max error {}".format(iteration, max_error))
         
         iteration += 1  # Increment iteration counter
@@ -73,6 +89,12 @@ def Q_value_iteration(env, gamma=1, threshold=0.001):
 
 
 
+def compute_optimal_value(QIagent, s):
+    ''' Compute the optimal value for state s '''
+    optimal_value = np.max(QIagent.Q_sa[s])
+    return optimal_value
+
+
 
 def experiment():
     gamma = 1.0
@@ -80,20 +102,25 @@ def experiment():
     env = StochasticWindyGridworld(initialize_model=True)
     env.render()
     QIagent = Q_value_iteration(env,gamma,threshold)
-
+    
+    V_star_s3 = compute_optimal_value(QIagent, 3)
+    print(f"The converged optimal value at the start state (s = 3) is: {V_star_s3}")
     # view optimal policy
     done = False
     s = env.reset()
     total_reward = 0
     timesteps = 0
     while not done:
+        
         a = QIagent.select_action(s)
         s_next, r, done = env.step(a)
         s = s_next
         total_reward += r
         timesteps += 1
         
-        env.render(Q_sa=QIagent.Q_sa, plot_optimal_policy=True, step_pause=0.4) # render the optimal policy
+
+        # visualize the optimal policy
+        env.render(Q_sa=QIagent.Q_sa, plot_optimal_policy=True, step_pause=1) 
 
     # TO DO: Compute mean reward per timestep under the optimal policy
     # print("Mean reward per timestep under optimal policy: {}".format(mean_reward_per_timestep))
@@ -104,5 +131,5 @@ def experiment():
 
 if __name__ == '__main__':
     experiment()
-    time.sleep(2) # Sleep for 5 seconds to allow the last plot to be displayed
+    time.sleep(2) # Sleep for X seconds to allow the last plot to be displayed
 
