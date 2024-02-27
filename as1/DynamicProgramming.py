@@ -33,24 +33,24 @@ class QValueIterationAgent:
     # Update function using in place update instead of using a copy of the Q-table
     # is faster but not so consistent - and is biased as first calc pairs might have bigger importnace
 
-    # def update(self, s, a, p_sas, r_sas):
-    #     ''' Function updates Q(s,a) using p_sas and r_sas '''
-    #     q_value = np.sum(p_sas * (r_sas + self.gamma * np.max(self.Q_sa, axis=1))) # Bellman equation
-    #     error = np.abs(self.Q_sa[s, a] - q_value)
-    #     self.Q_sa[s, a] = q_value
-    #     return error  
-    
-
-    # Update using a copy to ensure consistency
-    def update(self, s, a, p_sas, r_sas, Q_sa_copy):
-        ''' Function updates Q(s,a) using p_sas and r_sas and a copy of the current Q-table '''
-        # Use Q_sa_copy for the Bellman update to ensure consistency
-        q_value = np.sum(p_sas * (r_sas + self.gamma * np.max(Q_sa_copy, axis=1)))
+    def update(self, s, a, p_sas, r_sas):
+        ''' Function updates Q(s,a) using p_sas and r_sas '''
+        q_value = np.sum(p_sas * (r_sas + self.gamma * np.max(self.Q_sa, axis=1))) # Bellman equation
         error = np.abs(self.Q_sa[s, a] - q_value)
-        
-        # Update the Q-value in the original Q-table after computing the new value
         self.Q_sa[s, a] = q_value
         return error  
+    
+
+    # # Update using a copy to ensure consistency
+    # def update(self, s, a, p_sas, r_sas, Q_sa_copy):
+    #     ''' Function updates Q(s,a) using p_sas and r_sas and a copy of the current Q-table '''
+    #     # Use Q_sa_copy for the Bellman update to ensure consistency
+    #     q_value = np.sum(p_sas * (r_sas + self.gamma * np.max(Q_sa_copy, axis=1)))
+    #     error = np.abs(self.Q_sa[s, a] - q_value)
+        
+    #     # Update the Q-value in the original Q-table after computing the new value
+    #     self.Q_sa[s, a] = q_value
+    #     return error  
 
 
     
@@ -70,7 +70,8 @@ def Q_value_iteration(env, gamma=1, threshold=0.001):
                 p_sas, r_sas = env.model(s, a)
                 
                 # Update the agent based on the model's outputs using the copy of the Q-table
-                error = QIagent.update(s, a, p_sas, r_sas, Q_sa_copy)
+                # error = QIagent.update(s, a, p_sas, r_sas, Q_sa_copy)
+                error = QIagent.update(s, a, p_sas, r_sas)
                 
                 # Track the maximum absolute error in this sweep
                 max_error = max(max_error, error)

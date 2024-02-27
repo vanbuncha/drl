@@ -21,23 +21,30 @@ class BaseAgent:
     def select_action(self, s, policy='egreedy', epsilon=None, temp=None):
         
         if policy == 'greedy':
-            # TO DO: Add own code
-            a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+            q_values = self.Q_sa[s]
+            a = np.argmax(q_values) # takes the index of max q-value
             
         elif policy == 'egreedy':
             if epsilon is None:
                 raise KeyError("Provide an epsilon")
                 
-            # TO DO: Add own code
-            a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+            # If random number is less than epsilon, select a random action
+            if np.random.rand() < epsilon:
+                a = np.random.randint(0, self.n_actions)
+            else:
+                # Otherwise, select the action with the highest Q-value for state s
+                greedy_action = np.argmax(self.Q_sa[s, :])
+                a = greedy_action
                  
         elif policy == 'softmax':
             if temp is None:
                 raise KeyError("Provide a temperature")
                 
-            # TO DO: Add own code
-            a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
-              
+            # Calculate the action probabilities using softmax
+            action_probabilities = softmax(self.Q_sa[s, :], temp)
+            
+            # Select an action based on the probabilities
+            a = np.random.choice(np.arange(self.n_actions), p=action_probabilities)
         return a
         
     def update(self):
