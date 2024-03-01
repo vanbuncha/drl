@@ -69,7 +69,7 @@ def test():
     n_timesteps = 1000
     eval_interval=100
     gamma = 1.0
-    learning_rate = 0.001
+    learning_rate = 0.1
     
     # Exploration
     policy = 'egreedy' # 'egreedy' or 'softmax' 
