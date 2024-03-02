@@ -66,7 +66,7 @@ def Q_value_iteration(env, gamma=1, threshold=0.001):
                 max_error = max(max_error, error)
 
         # visualize the Q-value estimates at each iteration
-        env.render(Q_sa=QIagent.Q_sa, plot_optimal_policy=True, step_pause=0.3)
+        env.render(Q_sa=QIagent.Q_sa, plot_optimal_policy=True, step_pause=0.1)
         print("Q-value iteration, iteration {}, max error {}".format(iteration, max_error))
         
         iteration += 1  # Increment iteration counter
@@ -110,10 +110,9 @@ def experiment():
         
 
         # visualize the optimal policy
-        env.render(Q_sa=QIagent.Q_sa, plot_optimal_policy=True, step_pause=1) 
+        env.render(Q_sa=QIagent.Q_sa, plot_optimal_policy=True, step_pause=5) 
 
     # TO DO: Compute mean reward per timestep under the optimal policy
-    # print("Mean reward per timestep under optimal policy: {}".format(mean_reward_per_timestep))
     
     mean_reward_per_timestep = total_reward / timesteps
     
@@ -121,5 +120,5 @@ def experiment():
 
 if __name__ == '__main__':
     experiment()
-    time.sleep(2) # Sleep for X seconds to allow the last plot to be displayed
+    time.sleep(1) # Sleep for X seconds to allow the last plot to be displayed
 
