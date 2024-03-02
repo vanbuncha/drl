@@ -41,17 +41,6 @@ class QValueIterationAgent:
         return error  
     
 
-    # # Update using a copy to ensure consistency
-    # def update(self, s, a, p_sas, r_sas, Q_sa_copy):
-    #     ''' Function updates Q(s,a) using p_sas and r_sas and a copy of the current Q-table '''
-    #     # Use Q_sa_copy for the Bellman update to ensure consistency
-    #     q_value = np.sum(p_sas * (r_sas + self.gamma * np.max(Q_sa_copy, axis=1)))
-    #     error = np.abs(self.Q_sa[s, a] - q_value)
-        
-    #     # Update the Q-value in the original Q-table after computing the new value
-    #     self.Q_sa[s, a] = q_value
-    #     return error  
-
 
     
 def Q_value_iteration(env, gamma=1, threshold=0.001):
