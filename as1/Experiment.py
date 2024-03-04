@@ -128,7 +128,7 @@ def experiment():
                                           gamma, policy, epsilon, temp, smoothing_window, plot, n, eval_interval)
     Plot.add_curve(timesteps,learning_curve,label='Monte Carlo')        
     Plot.add_hline(optimal_episode_return, label="DP optimum")
-    Plot.save('depth.png')
+    Plot.save('depth4.png')
 
 if __name__ == '__main__':
     experiment()
