@@ -52,7 +52,7 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
         actions, rewards, done = [], [], False
         states = [env.reset()]
 
-        # Collect an episode
+        # Episode loop
         for _ in range(max_episode_length):
             actions.append(pi.select_action(states[-1], policy, epsilon, temp))
             next_state, reward, done = env.step(actions[-1])
@@ -61,7 +61,7 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
 
             timestep_counter += 1
 
-            # Evaluate the policy at intervals
+            # Evaluate the agent every eval_interval timesteps
             if timestep_counter != 0 and timestep_counter % eval_interval == 0:
                 returns = pi.evaluate(eval_env)
                 eval_returns.append(returns)
@@ -70,7 +70,7 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
             if done or timestep_counter >= n_timesteps:
                 break
 
-        # Update Q-values using n-step Q-learning
+        # Update Q-values using the episode
         pi.update(states, actions, rewards, done, n)
 
     if plot:

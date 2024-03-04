@@ -37,7 +37,7 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
         states, actions, rewards = [], [], []
         state = env.reset()
 
-        # Collect an episode
+        # Episode loop
         for _ in range(max_episode_length):
             action = pi.select_action(state, policy, epsilon, temp)
             next_state, reward, done = env.step(action)
@@ -48,10 +48,10 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
             if done:
                 break
 
-        # Update Q-value estimates
+        # Update Q-values using the episode
         pi.update(states, actions, rewards)
 
-        # Evaluate the policy at regular intervals
+        # Evaluate the agent every eval_interval timesteps
         if t != 0 and t % eval_interval == 0:
             returns = pi.evaluate(eval_env, n_eval_episodes=30, max_episode_length=100) 
             eval_returns.append(returns)

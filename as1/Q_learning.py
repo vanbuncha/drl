@@ -35,19 +35,17 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
 
     for t in range(n_timesteps):
 
-        # action with specific policy
+        # action with specific policy 
         a = agent.select_action(s, policy, epsilon, temp)
         
         # action, observation, reward, done
         s_next, r, done = env.step(a)
         
-        # Update Q-value
+        # Update Q-value 
         agent.update(s, a, r, s_next, done)
         
-        # Update reward and new state
+        # Update reward and new state for next iteration
         s = s_next if not done else env.reset()
-
-
 
 
         # Evaluate the agent every eval_interval timesteps
